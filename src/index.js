@@ -37,6 +37,7 @@ var blocked = false;
 
 app.get('/', (req, res) => res.send('Hello World!'));
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+// set up HTTP port for free server. Hosted for free on REPL using UptimeRobot loophole.
 
 dotenv.config();
 
@@ -64,7 +65,7 @@ client.on('interactionCreate', (interaction) => {
     if (limiter.allowRequest()) {
 
         if (interaction.commandName === "cash") {
-            getBuyingPower().then(buyingPower => {
+            getBuyingPower(alpaca, blocked).then(buyingPower => {
                 if (buyingPower !== null) {
                     let outString = ""
                     outString += `**TOTAL BP:** \`\`\`elm\n$ ${buyingPower[0]}\`\`\`\n`;
@@ -77,7 +78,7 @@ client.on('interactionCreate', (interaction) => {
         }
 
         else if (interaction.commandName === "portfolio") {
-            displayPortfolioDetails(interaction);
+            displayPortfolioDetails(alpaca, interaction);
             return;
         }
 
@@ -90,7 +91,7 @@ client.on('interactionCreate', (interaction) => {
 
                 try {
                     var stonk = interaction.options.get('ticker').value;
-                    createOrder('buy', stonk.toUpperCase(), interaction);
+                    createOrder(alpaca, 'buy', stonk.toUpperCase(), interaction);
                 } catch (error) {
                     console.log(`error occured ${error}`)
                 }
@@ -99,7 +100,7 @@ client.on('interactionCreate', (interaction) => {
 
                 try {
                     var stonk = interaction.options.get('ticker').value;
-                    createOrder('sell', stonk.toUpperCase(), interaction);
+                    createOrder(alpaca, 'sell', stonk.toUpperCase(), interaction);
                     return;
                 } catch (error) {
                     console.log(`error occured ${error}`)
